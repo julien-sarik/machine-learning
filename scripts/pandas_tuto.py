@@ -3,6 +3,12 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
+def get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y):
+    model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
+    model.fit(train_X, train_y)
+    preds_val = model.predict(val_X)
+    mae = mean_absolute_error(val_y, preds_val)
+    return(mae)
 
 # this file contains prices for houses
 melbourne_file_path = '../data/data.csv'
@@ -47,9 +53,31 @@ print('MAE when validating on training data: ' + str(mae))
 # run this script.
 train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 0)
 # Define model
-melbourne_model = DecisionTreeRegressor()
+melbourne_model = DecisionTreeRegressor(random_state=1)
 # Fit model
 melbourne_model.fit(train_X, train_y)
+print('with default parameters the decision tree has %d max depth and %d leaves' %(melbourne_model.get_depth(), melbourne_model.get_n_leaves()))
 # get predicted prices on validation data
 val_predictions = melbourne_model.predict(val_X)
-print('MAE when validating on validation data: ' + str(mean_absolute_error(val_y, val_predictions)))
+print('MAE when validating on validation data: %f' %mean_absolute_error(val_y, val_predictions))
+
+# 
+# Customization of the model to avoid underfitting and overfitting
+# 
+for max_leaf_nodes in [5, 50, 500, 5000]:
+    mae = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)
+    print("Max leaf nodes: %d  \t\t Mean Absolute Error:  %d" %(max_leaf_nodes, mae))
+
+# 
+# Random forest
+#
+# The random forest uses many trees, and it makes a prediction by averaging the predictions of each component tree. 
+# It generally has much better predictive accuracy than a single decision tree and it works well with default parameters.
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+
+forest_model = RandomForestRegressor(random_state=1)
+forest_model.fit(train_X, train_y)
+melb_preds = forest_model.predict(val_X)
+print('MAE with random forest %d' %mean_absolute_error(val_y, melb_preds))
