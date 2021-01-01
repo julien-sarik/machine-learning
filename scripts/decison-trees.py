@@ -3,6 +3,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.impute import SimpleImputer
 
 def get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y):
     model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
@@ -24,14 +25,31 @@ print(melbourne_data.describe())
 print(melbourne_data.columns)
 # print top few rows
 print(melbourne_data.head())
-# dropna drops missing values (think of na as "not available")
-melbourne_data = melbourne_data.dropna(axis=0)
+
+# 
+# Handle missing values
+# 
+# Get names of columns with missing values
+cols_with_missing = [col for col in melbourne_data.columns
+                     if melbourne_data[col].isnull().any()]
+print('columns with missing values {}'.format(cols_with_missing))
+# dropna() drops rows with missing values
+# melbourne_data = melbourne_data.dropna()
+melbourne_data = melbourne_data.dropna(subset=['Price','Rooms', 'Bathroom'])
+
 # by convention y is the variable name for the prediction target
 y = melbourne_data.Price
 # features (columns) are the model input
 melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
 # by convention X is the variable name for the features
 X = melbourne_data[melbourne_features]
+
+# instead of loosing data droping the whole row it can be more efficient to replace unknown values with an estimate like the mean value
+imputer = SimpleImputer()
+imputed_data = pd.DataFrame(imputer.fit_transform(X))
+# Imputation removed column names; put them back
+imputed_data.columns = X.columns
+X = imputed_data
 
 # 
 # Decision tree
@@ -46,7 +64,7 @@ print('MAE when validating on training data: %f' %mean_absolute_error(y, predict
 # split data into training and validation data, for both features and target
 # The split is based on a random number generator. Supplying a numeric value to
 # the random_state argument guarantees we get the same split every time we run this script.
-train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 0)
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 0) # note the multiple assignment
 # Fit model
 melbourne_model.fit(train_X, train_y)
 print('with default parameters the decision tree has %d max depth and %d leaves' %(melbourne_model.get_depth(), melbourne_model.get_n_leaves()))
