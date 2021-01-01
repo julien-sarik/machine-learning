@@ -55,8 +55,9 @@ melbourne_data = melbourne_data.dropna(subset=['Price','Rooms', 'Bathroom'])
 # by convention y is the variable name for the prediction target
 y = melbourne_data.Price
 # features (columns) are the model input
-melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
-melbourne_features.extend(cat_var_cols)
+numerical_cols = [cname for cname in melbourne_data.columns if melbourne_data[cname].dtype in ['int64', 'float64']]
+melbourne_features = numerical_cols #['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
+print('features {}'.format(melbourne_features))
 # by convention X is the variable name for the features
 X = melbourne_data[melbourne_features]
 
