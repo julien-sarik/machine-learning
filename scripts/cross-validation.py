@@ -5,6 +5,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 
+"""
+Cross validation consists in doing multiple validations on different training and validation sets.
+This way we have better prediction plus we don't have to bother to split the dataset into training and validation set since
+it's done by the pipeline.
+"""
+
 # 
 # Get and prepare data
 # 
@@ -58,8 +64,6 @@ my_pipeline = Pipeline(steps=[('preprocessor', preprocessor),
 # 
 # Evaluate the Pipeline using Cross validation
 # 
-# cross validation consists in doing multiple validation on different training and validation sets
-# this way we have better prediction plus we don't have to bother to split the dataset into training and validation set
 from sklearn.model_selection import cross_val_score
 
 # Multiply by -1 since sklearn calculates *negative* MAE

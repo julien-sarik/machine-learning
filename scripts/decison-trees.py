@@ -29,17 +29,6 @@ print(melbourne_data.columns)
 # print top few rows
 print(melbourne_data.head())
 
-# 
-# Label encoding for categorical variables
-# 
-# Select categorical columns with relatively low cardinality (convenient but arbitrary)
-cat_var_cols = [cname for cname in melbourne_data.columns 
-                        if melbourne_data[cname].dtype == "object" # indicate column has text
-                        and melbourne_data[cname].nunique() < 10 ]
-print("Categorical variables:{}".format(cat_var_cols))
-label_encoder = LabelEncoder()
-for col in cat_var_cols:
-    melbourne_data[col] = label_encoder.fit_transform(melbourne_data[col])
 
 # 
 # Handle missing values
@@ -49,24 +38,16 @@ missing_val_count_by_column = (melbourne_data.isnull().sum())
 print('columns with missing values:')
 print(missing_val_count_by_column[missing_val_count_by_column > 0])
 # dropna() drops rows with missing values
-# melbourne_data = melbourne_data.dropna()
-melbourne_data = melbourne_data.dropna(subset=['Price','Rooms', 'Bathroom'])
+melbourne_data = melbourne_data.dropna()
+
 
 # by convention y is the variable name for the prediction target
 y = melbourne_data.Price
 # features (columns) are the model input
-numerical_cols = [cname for cname in melbourne_data.columns if melbourne_data[cname].dtype in ['int64', 'float64']]
-melbourne_features = numerical_cols #['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
-print('features {}'.format(melbourne_features))
+melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
 # by convention X is the variable name for the features
 X = melbourne_data[melbourne_features]
 
-# instead of loosing data droping the whole row it can be more efficient to replace unknown values with an estimate like the mean value
-imputer = SimpleImputer()
-imputed_data = pd.DataFrame(imputer.fit_transform(X))
-# Imputation removed column names; put them back
-imputed_data.columns = X.columns
-X = imputed_data
 
 # 
 # Decision tree
