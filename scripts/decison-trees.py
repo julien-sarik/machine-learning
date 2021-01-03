@@ -79,11 +79,15 @@ for max_leaf_nodes in [5, 50, 500, 5000]:
     mae = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)
     print("Max leaf nodes: %d  \t\t Mean Absolute Error:  %d" %(max_leaf_nodes, mae))
 
-# 
-# Random forest
-#
-# The random forest uses many trees, and it makes a prediction by averaging the predictions of each component tree. 
-# It generally has much better predictive accuracy than a single decision tree and it works well with default parameters (i.e. without customization of the model).
+
+"""
+
+Random forest
+
+The random forest uses many trees, and it makes a prediction by averaging the predictions of each component tree. 
+It generally has much better predictive accuracy than a single decision tree and it works well with default parameters (i.e. without customization of the model).
+RF trees are independent from each other therefore learning can leverage parallelization.
+"""
 forest_model = RandomForestRegressor(random_state=1)
 forest_model.fit(train_X, train_y)
 melb_preds = forest_model.predict(val_X)
